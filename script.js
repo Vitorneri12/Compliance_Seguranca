@@ -118,17 +118,58 @@ if (form) {
             button.textContent = 'Enviando...';
             button.disabled = true;
 
-            // Simulate form submission
+            // Format message for WhatsApp
+            const whatsappMessage = formatWhatsAppMessage(data);
+
+            // Send to WhatsApp
+            const whatsappURL = `https://wa.me/5519998630306?text=${encodeURIComponent(whatsappMessage)}`;
+
             setTimeout(() => {
-                alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+                // Reset form
                 this.reset();
                 button.textContent = originalText;
                 button.disabled = false;
-            }, 1500);
+
+                // Open WhatsApp with formatted message
+                window.open(whatsappURL, '_blank');
+
+                // Show success message
+                alert('Redirecionando para WhatsApp com seus dados preenchidos!');
+            }, 1000);
         } else {
             alert('Por favor, preencha todos os campos obrigatórios corretamente.');
         }
     });
+}
+
+// Function to format message for WhatsApp
+function formatWhatsAppMessage(data) {
+    const servicoMap = {
+        'compliance': 'Consultoria em Compliance',
+        'seguranca': 'Segurança Jurídica Empresarial',
+        'lgpd': 'Consultoria LGPD',
+        'protecao': 'Proteção Jurídica',
+        'outro': 'Outro'
+    };
+
+    let message = `🏢 *SOLICITAÇÃO DE CONSULTA - MARTINS PALMEIRA & BERGAMO*\n\n`;
+    message += `👤 *Nome:* ${data.nome}\n`;
+    message += `📧 *E-mail:* ${data.email}\n`;
+    message += `📱 *Telefone:* ${data.telefone}\n`;
+
+    if (data.empresa) {
+        message += `🏢 *Empresa:* ${data.empresa}\n`;
+    }
+
+    message += `⚖️ *Serviço de Interesse:* ${servicoMap[data.servico] || data.servico}\n`;
+
+    if (data.mensagem) {
+        message += `💬 *Mensagem:*\n${data.mensagem}\n`;
+    }
+
+    message += `\n📅 *Enviado em:* ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`;
+
+    return message;
 }
 
 // Animate elements on scroll
